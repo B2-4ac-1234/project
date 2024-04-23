@@ -5,16 +5,22 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc && vite build -- mode production",
+    "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.4.21"
+    "vue": "^3.4.21",
+    "vue-request": "^2.0.3",
+    "vue-router": "^4.2.4",
+    "axios": "^1.5.0",
+    "pinia": "^2.1.6",
+    "moment": "^2.29.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
+    "@types/node": "^20.6.3",
     "vue-tsc": "^2.0.6"
   }
 }

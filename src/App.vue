@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+
 </script>
 
 <template>
-  <div>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+  <router-view v-slot="{ Component, route }">
+    <transition name="animation">
+      <component class="fixed" :is="Component" :key="route.name" />
+    </transition>
+  </router-view>
 </template>
 
 <style scoped>
