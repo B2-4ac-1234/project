@@ -21,13 +21,13 @@ export default defineConfig({
       "@": resolve(__dirname, "./src"),
     },
   },
+
   publicDir: "public",
   base: "/project/",
   build: {
     outDir: "docs",
     sourcemap: false,
   },
-  server: {
-    port: 8888,
-  },
+  server: { host: '0.0.0.0', port: 8000 },
+  clearScreen: false,
 });
