@@ -1,11 +1,28 @@
 <template>
   <div>
-    <HelloWorld msg="Welcome to my blog!" />
+    <div class="home">
+      <ul>
+        <li> <router-link :to="{ path: '/404' }">404</router-link></li>
+        <li> <router-link :to="{ path: '/imageHover' }">图片放大组件</router-link></li>
+        <div v-for="item in phaserRoutes">
+          <li><router-link :to="item.path">{{ item.name }}</router-link></li>
+        </div>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+
+const phaserRouters: any = import.meta.glob('@/phaser/*.vue', { eager: true })
+
+const phaserRoutes = Object.keys(phaserRouters).map(key => {
+  const path = key.substring(key.lastIndexOf("/"), key.length + 1).replaceAll(".vue", "")
+  return {
+    name: `${path.replace("/", "")}`,
+    path: `${path}`,
+  }
+})
 </script>
 
 <style scoped></style>

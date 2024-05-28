@@ -7,7 +7,7 @@ import googlelogo from '@/assets/googlelogo.png';
 
 <template>
   <div class="images">
-    <ImageHoverEnlarge tag="googlelogo" :src="googlelogo" alt="logo">
+    <ImageHoverEnlarge tag="googlelogo" :src="googlelogo" alt="logo" color="#ffffff" hover_color="red">
       Put your cursor over the image to enlarge it.
     </ImageHoverEnlarge>
   </div>
