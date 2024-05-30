@@ -12,9 +12,101 @@ import star from "@/assets/phaser/demo1/star.png"
 import bomb from "@/assets/phaser/demo1/bomb.png"
 import dude from "@/assets/phaser/demo1/dude.png"
 
-var score = 0;
-var scoreText;
-var platforms;
+//写法最好通过继承创建,才能提供ts提示
+class Preload extends Phaser.Scene {
+
+  platforms: Phaser.Physics.Arcade.StaticGroup;
+  player: any;
+  cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+  jumpCount: number = 0;//跳跃次数,用来实现二段跳
+
+  constructor() {
+    super('Preload');
+  }
+  preload() {
+    this.load.image('sky', sky);
+    this.load.image('platform', platform);
+    this.load.image('star', star);
+    this.load.image('bomb', bomb);
+    this.load.spritesheet('dude', dude,
+      { frameWidth: 32, frameHeight: 48 }
+    );
+  }
+  create() {
+    //https://phaser.io/tutorials/making-your-first-phaser-3-game-chinese/part3
+    this.add.image(400, 300, 'sky');
+    this.platforms = this.physics.add.staticGroup();//静态物理组（Group）,静态物体只有位置和尺寸。重力对它没有影响，你不能给它设置速度，有东西跟它碰撞时，它一点都不动
+    this.platforms.create(400, 568, 'platform').setScale(2).refreshBody();
+    this.platforms.create(600, 400, 'platform');
+    this.platforms.create(50, 250, 'platform');
+    this.platforms.create(750, 220, 'platform');
+    this.player = this.physics.add.sprite(100, 450, 'dude');
+    this.player.setBounce(0.2);
+    this.player.setCollideWorldBounds(true);
+
+    this.player.anims.create({
+      key: 'left',
+      frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
+      frameRate: 10,
+      repeat: -1
+    });
+
+    this.player.anims.create({
+      key: 'right',
+      frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
+      frameRate: 10,
+      repeat: -1
+    });
+
+    this.player.anims.create({
+      key: 'turn',
+      frames: [{ key: 'dude', frame: 4 }],
+      frameRate: 20
+    });
+
+    this.physics.add.collider(this.player, this.platforms);//碰撞器（Collider）是施魔法的地方。它接收两个对象，检测二者之间的碰撞，并使二者分开。
+    this.cursors = this.input.keyboard.createCursorKeys();
+    this.player.body.setGravityY(300)
+  }
+  update() {
+
+    //键盘操作必须放在update中监听,否则无法响应
+
+    if (this.cursors.left.isDown) {
+      this.player.setVelocityX(-160);
+
+      this.player.anims.play('left', true);
+    }
+    else if (this.cursors.right.isDown) {
+      this.player.setVelocityX(160);
+
+      this.player.anims.play('right', true);
+    }
+    else {
+      this.player.setVelocityX(0);
+      this.player.anims.play('turn');
+    }
+
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.up)) {
+      // console.log(`output->this.doubleJump`, this.doubleJump);
+      this.jumpCount++;
+      // 只允许最多连跳两下
+      if (this.jumpCount < 2) {
+        this.player.setVelocityY(-330);
+      }
+    }
+
+    if (this.cursors.down.isDown) {
+      this.player.setVelocityY(600);
+    }
+
+    if (this.player.body.touching.down) {
+      this.jumpCount = 0;
+    }
+
+  }
+}
+
 
 var config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -23,41 +115,15 @@ var config: Phaser.Types.Core.GameConfig = {
   physics: {
     default: 'arcade',
     arcade: {
-      gravity: { y: 300, x: 300 },
+      gravity: { y: 0, x: 0 },
       debug: false
     }
   },
-  scene: {
-    preload: preload,
-    create: create,
-    update: update
-  }
+  scene: new Preload()
 };
 
 var game = new Phaser.Game(config);
 
-function preload() {
-  this.load.image('sky', sky);
-  this.load.image('platform', platform);
-  this.load.image('star', star);
-  this.load.image('bomb', bomb);
-  this.load.spritesheet('dude', dude,
-    { frameWidth: 32, frameHeight: 48 }
-  );
-}
-
-function create() {
-  //https://phaser.io/tutorials/making-your-first-phaser-3-game-chinese/part3
-  this.add.image(400, 300, 'sky');
-  platforms = this.physics.add.staticGroup();
-  platforms.create(400, 568, 'platform').setScale(2).refreshBody();
-  platforms.create(600, 400, 'platform');
-  platforms.create(50, 250, 'platform');
-  platforms.create(750, 220, 'platform');
-}
-
-function update() {
-}
 </script>
 
 <style scoped></style>
