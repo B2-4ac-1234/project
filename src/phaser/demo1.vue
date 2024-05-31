@@ -18,7 +18,9 @@ class Preload extends Phaser.Scene {
   platforms: Phaser.Physics.Arcade.StaticGroup;
   player: any;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-  jumpCount: number = 0;//跳跃次数,用来实现二段跳
+  gameTime: number = 0;
+  MaxJumpCount: number = 2;//最大跳跃次数
+  jumpCount: number = this.MaxJumpCount;//可跳跃次数,用来实现多段跳
 
   constructor() {
     super('Preload');
@@ -87,11 +89,11 @@ class Preload extends Phaser.Scene {
       this.player.anims.play('turn');
     }
 
-    if (Phaser.Input.Keyboard.JustDown(this.cursors.up)) {
+    if (this.cursors.up.isDown && this.game.getTime() > this.gameTime) {
       // console.log(`output->this.doubleJump`, this.doubleJump);
-      this.jumpCount++;
-      // 只允许最多连跳两下
-      if (this.jumpCount < 2) {
+      if (this.jumpCount > 0) {
+        this.jumpCount--
+        this.gameTime = this.game.getTime() + 250;
         this.player.setVelocityY(-330);
       }
     }
@@ -101,7 +103,7 @@ class Preload extends Phaser.Scene {
     }
 
     if (this.player.body.touching.down) {
-      this.jumpCount = 0;
+      this.jumpCount = this.MaxJumpCount;
     }
 
   }
@@ -122,7 +124,7 @@ var config: Phaser.Types.Core.GameConfig = {
   scene: new Preload()
 };
 
-var game = new Phaser.Game(config);
+new Phaser.Game(config);
 
 </script>
 
