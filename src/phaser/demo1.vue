@@ -68,44 +68,31 @@ class Preload extends Phaser.Scene {
 
     this.physics.add.collider(this.player, this.platforms);//碰撞器（Collider）是施魔法的地方。它接收两个对象，检测二者之间的碰撞，并使二者分开。
     this.cursors = this.input.keyboard.createCursorKeys();
-    this.player.body.setGravityY(300)
-  }
-  update() {
-
-    //键盘操作必须放在update中监听,否则无法响应
-
-    if (this.cursors.left.isDown) {
+    this.cursors.left.on('down', () => {
       this.player.setVelocityX(-160);
-
-      this.player.anims.play('left', true);
-    }
-    else if (this.cursors.right.isDown) {
+    })
+    this.cursors.right.on('down', () => {
       this.player.setVelocityX(160);
-
-      this.player.anims.play('right', true);
-    }
-    else {
-      this.player.setVelocityX(0);
-      this.player.anims.play('turn');
-    }
-
-    if (this.cursors.up.isDown && this.game.getTime() > this.gameTime) {
-      // console.log(`output->this.doubleJump`, this.doubleJump);
+    })
+    this.cursors.down.on('down', () => {
+      this.player.setVelocityY(600);
+    })
+    this.cursors.up.on('down', () => {
       if (this.jumpCount > 0) {
+        console.log(`output->this.doubleJump`, this.jumpCount);
         this.jumpCount--
-        this.gameTime = this.game.getTime() + 250;
+        this.gameTime = this.game.getTime() + 20;
         this.player.setVelocityY(-330);
       }
-    }
-
-    if (this.cursors.down.isDown) {
-      this.player.setVelocityY(600);
-    }
-
+    })
+    this.player.body.setGravityY(300)
+  }
+  // update()方法在每帧被调用，用来更新游戏状态
+  update() {
+    // 如果落地，则重置跳跃次数
     if (this.player.body.touching.down) {
       this.jumpCount = this.MaxJumpCount;
     }
-
   }
 }
 
