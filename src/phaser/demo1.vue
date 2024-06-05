@@ -16,11 +16,13 @@ import dude from "@/assets/phaser/demo1/dude.png"
 class Preload extends Phaser.Scene {
 
   platforms: Phaser.Physics.Arcade.StaticGroup;
-  player: any;
+  player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+  stars: Phaser.Physics.Arcade.Group;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   gameTime: number = 0;
   MaxJumpCount: number = 2;//最大跳跃次数
   jumpCount: number = this.MaxJumpCount;//可跳跃次数,用来实现多段跳
+  moveSpeed: number = 200;
 
   constructor() {
     super('Preload');
@@ -69,10 +71,24 @@ class Preload extends Phaser.Scene {
     this.physics.add.collider(this.player, this.platforms);//碰撞器（Collider）是施魔法的地方。它接收两个对象，检测二者之间的碰撞，并使二者分开。
     this.cursors = this.input.keyboard.createCursorKeys();
     this.cursors.left.on('down', () => {
-      this.player.setVelocityX(-160);
+      this.player.setVelocityX(-this.moveSpeed);
+    })
+    this.cursors.left.on('up', () => {
+      if (!this.cursors.right.isDown) {
+        this.player.setVelocityX(0);
+      } else {
+        this.player.setVelocityX(this.moveSpeed);
+      }
     })
     this.cursors.right.on('down', () => {
-      this.player.setVelocityX(160);
+      this.player.setVelocityX(this.moveSpeed);
+    })
+    this.cursors.right.on('up', () => {
+      if (!this.cursors.left.isDown) {
+        this.player.setVelocityX(0);
+      } else {
+        this.player.setVelocityX(-this.moveSpeed);
+      }
     })
     this.cursors.down.on('down', () => {
       this.player.setVelocityY(600);
@@ -85,6 +101,8 @@ class Preload extends Phaser.Scene {
         this.player.setVelocityY(-330);
       }
     })
+
+    // 默认重力
     this.player.body.setGravityY(300)
   }
   // update()方法在每帧被调用，用来更新游戏状态
@@ -92,6 +110,17 @@ class Preload extends Phaser.Scene {
     // 如果落地，则重置跳跃次数
     if (this.player.body.touching.down) {
       this.jumpCount = this.MaxJumpCount;
+      this.player.setVelocityY(0);
+    }
+    // 如果没走，则播放空闲动画
+    if (this.player.body.velocity.x == 0) {
+      this.player.anims.play('turn');
+    }
+    if (this.player.body.velocity.x > 0) {
+      this.player.anims.play('right', true);
+    }
+    if (this.player.body.velocity.x < 0) {
+      this.player.anims.play('left', true);
     }
   }
 }
