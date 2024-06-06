@@ -15,14 +15,40 @@ import dude from "@/assets/phaser/demo1/dude.png"
 //写法最好通过继承创建,才能提供ts提示
 class Preload extends Phaser.Scene {
 
+  /**
+   * 平台组
+   */
   platforms: Phaser.Physics.Arcade.StaticGroup;
+  /**
+   * 玩家
+   */
   player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   stars: Phaser.Physics.Arcade.Group;
+  /**
+   * 键盘控制
+   */
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+  /**
+   * 游戏时间
+   */
   gameTime: number = 0;
-  MaxJumpCount: number = 2;//最大跳跃次数
-  jumpCount: number = this.MaxJumpCount;//可跳跃次数,用来实现多段跳
-  moveSpeed: number = 200;
+  /**
+   * 最大跳跃次数(二段跳)
+   */
+  MaxJumpCount: number = 2;
+  /**
+   * 当前跳跃次数
+   */
+  jumpCount: number = this.MaxJumpCount;
+  /**
+   * 移动速度
+   */
+  moveSpeed: number = 180;
+
+  /**
+   * 最大移动速度
+   */
+  moveSpeedMax: number = 260;
 
   constructor() {
     super('Preload');
@@ -67,28 +93,23 @@ class Preload extends Phaser.Scene {
       frames: [{ key: 'dude', frame: 4 }],
       frameRate: 20
     });
-
+    this.player.body.setMaxVelocityX(this.moveSpeedMax);
+    this.player.body.setMaxVelocityY(this.moveSpeedMax * 2);
     this.physics.add.collider(this.player, this.platforms);//碰撞器（Collider）是施魔法的地方。它接收两个对象，检测二者之间的碰撞，并使二者分开。
     this.cursors = this.input.keyboard.createCursorKeys();
     this.cursors.left.on('down', () => {
-      this.player.setVelocityX(-this.moveSpeed);
+      this.player.setVelocityX(-this.moveSpeed / 1.6);
+      this.player.setAccelerationX(-this.moveSpeed);
     })
     this.cursors.left.on('up', () => {
-      if (!this.cursors.right.isDown) {
-        this.player.setVelocityX(0);
-      } else {
-        this.player.setVelocityX(this.moveSpeed);
-      }
+      this.player.setAccelerationX(0);
     })
     this.cursors.right.on('down', () => {
-      this.player.setVelocityX(this.moveSpeed);
+      this.player.setVelocityX(this.moveSpeed / 1.6);
+      this.player.setAccelerationX(this.moveSpeed);
     })
     this.cursors.right.on('up', () => {
-      if (!this.cursors.left.isDown) {
-        this.player.setVelocityX(0);
-      } else {
-        this.player.setVelocityX(-this.moveSpeed);
-      }
+      this.player.setAccelerationX(0);
     })
     this.cursors.down.on('down', () => {
       this.player.setVelocityY(600);
@@ -111,6 +132,13 @@ class Preload extends Phaser.Scene {
     if (this.player.body.touching.down) {
       this.jumpCount = this.MaxJumpCount;
       this.player.setVelocityY(0);
+
+      // 设置摩擦力
+      this.player.setFrictionX(0.2)
+      this.player.setDrag(this.moveSpeed, this.moveSpeed);
+    } else {//如果在空中，则减少摩擦力
+      this.player.setFrictionX(0.8)
+      this.player.setDrag(this.moveSpeed, this.moveSpeed);
     }
     // 如果没走，则播放空闲动画
     if (this.player.body.velocity.x == 0) {
@@ -122,6 +150,9 @@ class Preload extends Phaser.Scene {
     if (this.player.body.velocity.x < 0) {
       this.player.anims.play('left', true);
     }
+    // if (this.player.body.onWorldBounds) {
+    // this.player.setVelocityX(0);
+    // }
   }
 }
 
