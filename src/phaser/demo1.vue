@@ -50,6 +50,8 @@ class Preload extends Phaser.Scene {
    */
   moveSpeedMax: number = 260;
 
+
+
   constructor() {
     super('Preload');
   }
@@ -119,12 +121,13 @@ class Preload extends Phaser.Scene {
         console.log(`output->this.doubleJump`, this.jumpCount);
         this.jumpCount--
         this.gameTime = this.game.getTime() + 20;
-        this.player.setVelocityY(-330);
+        this.player.body.setVelocityY(-330);
       }
     })
 
     // 默认重力
-    this.player.body.setGravityY(300)
+    this.player.body.setGravityY(280)
+    this.player.body.setAccelerationY(150)
   }
   // update()方法在每帧被调用，用来更新游戏状态
   update() {
@@ -134,11 +137,11 @@ class Preload extends Phaser.Scene {
       this.player.setVelocityY(0);
 
       // 设置摩擦力
-      this.player.setFrictionX(0.2)
+      // this.player.setFrictionX(0)
       this.player.setDrag(this.moveSpeed, this.moveSpeed);
     } else {//如果在空中，则减少摩擦力
-      this.player.setFrictionX(0.8)
-      this.player.setDrag(this.moveSpeed, this.moveSpeed);
+      // this.player.setFrictionX(0.8)
+      this.player.setDrag(this.moveSpeed / 2, this.moveSpeed / 2);
     }
     // 如果没走，则播放空闲动画
     if (this.player.body.velocity.x == 0) {
