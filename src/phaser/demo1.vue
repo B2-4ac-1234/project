@@ -23,7 +23,14 @@ class Preload extends Phaser.Scene {
    * 玩家
    */
   player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+  /**
+   * 星星
+   */
   stars: Phaser.Physics.Arcade.Group;
+  /**
+   * 分数
+   */
+  score: number = 0;
   /**
    * 键盘控制
    */
@@ -65,7 +72,7 @@ class Preload extends Phaser.Scene {
     );
   }
   create() {
-    //https://phaser.io/tutorials/making-your-first-phaser-3-game-chinese/part3
+    //https://phaser.io/tutorials/making-your-first-phaser-3-game-chinese/part10
     this.add.image(400, 300, 'sky');
     this.platforms = this.physics.add.staticGroup();//静态物理组（Group）,静态物体只有位置和尺寸。重力对它没有影响，你不能给它设置速度，有东西跟它碰撞时，它一点都不动
     this.platforms.create(400, 568, 'platform').setScale(2).refreshBody();
@@ -128,6 +135,25 @@ class Preload extends Phaser.Scene {
     // 默认重力
     this.player.body.setGravityY(280)
     this.player.body.setAccelerationY(150)
+
+    var scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', color: '#000' });
+    this.stars = this.physics.add.group({
+      key: 'star',
+      repeat: 11,
+      setXY: { x: 12, y: 0, stepX: 70 },
+    });
+    this.stars.getChildren().forEach(function (child) {
+      child.body.velocity.y = Phaser.Math.Between(40, 80);
+    })
+    this.physics.add.collider(this.stars, this.platforms);
+    // 当人物和星星碰撞时，触发回调函数
+    this.physics.add.overlap(this.player, this.stars, (player, star) => {
+      // 销毁星星
+      (star as Phaser.GameObjects.GameObject).destroy();
+      // 增加分数
+      this.score += 10;
+      scoreText.setText('Score: ' + this.score);
+    }, null, this);
   }
   // update()方法在每帧被调用，用来更新游戏状态
   update() {
@@ -157,6 +183,7 @@ class Preload extends Phaser.Scene {
     // this.player.setVelocityX(0);
     // }
   }
+  
 }
 
 
