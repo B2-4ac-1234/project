@@ -1,6 +1,7 @@
 <template>
   <div>
     <p>demo1</p>
+    <div id="game-container"></div>
   </div>
 </template>
 
@@ -12,8 +13,26 @@ import star from "@/assets/phaser/demo1/star.png";
 import bomb from "@/assets/phaser/demo1/bomb.png";
 import dude from "@/assets/phaser/demo1/dude.png";
 
+
+interface Star extends Phaser.GameObjects.Sprite {
+  /**
+   * 是否被收集
+   */
+  collected: boolean
+}
 //写法最好通过继承创建,才能提供ts提示
 class Preload extends Phaser.Scene {
+
+  /**
+   * 游戏宽度
+   */
+  width: number = 800;
+
+  /**
+   * 游戏高度
+   */
+  height: number = 600;
+
   /**
    * 游戏结束
    */
@@ -86,6 +105,7 @@ class Preload extends Phaser.Scene {
     this.platforms.create(600, 400, "platform");
     this.platforms.create(50, 250, "platform");
     this.platforms.create(750, 220, "platform");
+
     this.player = this.physics.add.sprite(100, 450, "dude");
     this.player.setBounce(0.2);
     this.player.setCollideWorldBounds(true);
@@ -165,23 +185,29 @@ class Preload extends Phaser.Scene {
     this.physics.add.collider(this.stars, this.platforms);
     this.physics.add.collider(this.stars, this.stars); // 星星与星星碰撞,避免星星重叠
     // 当人物和星星碰撞时，触发回调函数
-    this.physics.add.collider(
+    this.physics.add.overlap(
       this.player,
       this.stars,
       (player, star) => {
+        const _width = this.width
+        if ((star as Star).collected) {
+          return;
+        }
         // 销毁星星
-        (star as Phaser.GameObjects.Sprite).setVisible(false).setActive(false);
+        (star as Star).setVisible(false).setActive(false);
+        (star as Star).collected = true;
         // 增加分数
         this.score += 10;
         scoreText.setText("Score: " + this.score);
         // 所有星星吃完，随机生成一批新的星星
         if (this.stars.countActive(true) === 0) {
           this.stars.getChildren().forEach(function (star) {
-            star.body.position.x = 12 + Math.random() * 800;
-            star.body.velocity.y = Phaser.Math.Between(80, 100);
-            (star as Phaser.GameObjects.Sprite)
+            star.body.position.x = Math.random() * _width;
+            star.body.velocity.y = Phaser.Math.Between(100, 120);
+            (star as Star)
               .setVisible(true)
               .setActive(true);
+              (star as Star).collected = false;
           });
         }
       },
@@ -208,6 +234,8 @@ class Preload extends Phaser.Scene {
       //如果在空中，则减少摩擦力
       // this.player.setFrictionX(0.8)
       this.player.setDrag(this.moveSpeed / 2, this.moveSpeed / 2);
+    }else{
+      this.player.setDragX(this.moveSpeed);
     }
     // 如果没走，则播放空闲动画
     if (this.player.body.velocity.x == 0) {
@@ -226,39 +254,28 @@ class Preload extends Phaser.Scene {
       if (star.body.position.x < 0) {
         star.body.position.x = 0;
         star.body.velocity.x *= -1;
-      } else if (star.body.position.x > 800) {
-        star.body.position.x = 800;
+      } else if (star.body.position.x > this.width) {
+        star.body.position.x = this.width;
         star.body.velocity.x *= -1;
       }
 
       if (star.body.position.y < 0) {
         star.body.position.y = 0;
         star.body.velocity.y *= -1;
-      } else if (star.body.position.y > 600) {
-        star.body.position.y = 600;
+      } else if (star.body.position.y > this.height) {
+        star.body.position.y = this.height;
         star.body.velocity.y *= -1;
       }
     });
   }
-  }
-function isOnStar(player, stars) {
-  let onStar = stars.getChildren().find((star: Phaser.GameObjects.Sprite) => {
-    if (
-      Phaser.Geom.Intersects.RectangleToRectangle(
-        player.getBounds(),
-        star.getBounds()
-      )
-    ) {
-      return true;
-    }
-  });
-  return onStar !== undefined;
 }
 
 var config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   width: 800,
   height: 600,
+  //设置div容器，配合css设置宽高
+  parent: 'game-container',
   physics: {
     default: "arcade",
     arcade: {
@@ -266,10 +283,22 @@ var config: Phaser.Types.Core.GameConfig = {
       debug: false,
     },
   },
+  scale:{
+    //游戏画布在父级中水平和垂直居中,自动缩放模式
+    mode: Phaser.Scale.CENTER_BOTH,
+    autoCenter: Phaser.Scale.CENTER_BOTH
+  },
   scene: new Preload(),
 };
 
-new Phaser.Game(config);
+onMounted(()=>{
+  new Phaser.Game(config);
+})
 </script>
 
-<style scoped></style>
+<style scoped>
+#game-container{
+  width: 50%;
+  height: 50%;
+}
+</style>
