@@ -14,7 +14,7 @@ import bomb from "@/assets/phaser/demo1/bomb.png";
 import dude from "@/assets/phaser/demo1/dude.png";
 
 
-interface Star extends Phaser.GameObjects.Sprite {
+interface Star extends Phaser.Physics.Arcade.Sprite {
   /**
    * 是否被收集
    */
@@ -101,7 +101,7 @@ class Preload extends Phaser.Scene {
     //https://phaser.io/tutorials/making-your-first-phaser-3-game-chinese/part10
     this.add.image(400, 300, "sky");
     this.platforms = this.physics.add.staticGroup(); //静态物理组（Group）,静态物体只有位置和尺寸。重力对它没有影响，你不能给它设置速度，有东西跟它碰撞时，它一点都不动
-    this.platforms.create(400, 568, "platform").setScale(2).refreshBody();
+    this.platforms.create(400, 570, "platform").setScale(2).refreshBody();
     this.platforms.create(600, 400, "platform");
     this.platforms.create(50, 250, "platform");
     this.platforms.create(750, 220, "platform");
@@ -179,10 +179,12 @@ class Preload extends Phaser.Scene {
       setXY: { x: 12, y: 0, stepX: 100 },
     });
     this.stars.getChildren().forEach(function (star) {
-      star.body.velocity.y = Phaser.Math.Between(40, 80);
+      star.body.velocity.y = Phaser.Math.Between(150, 180);
     });
     // 星星与平台碰撞,避免星星穿透平台
-    this.physics.add.collider(this.stars, this.platforms);
+    this.physics.add.collider(this.stars, this.platforms,(star, platform)=>{
+      (star as Star).body.velocity.y = 0
+    });
     this.physics.add.collider(this.stars, this.stars); // 星星与星星碰撞,避免星星重叠
     // 当人物和星星碰撞时，触发回调函数
     this.physics.add.overlap(
@@ -190,6 +192,7 @@ class Preload extends Phaser.Scene {
       this.stars,
       (player, star) => {
         const _width = this.width
+        const _height = this.height
         if ((star as Star).collected) {
           return;
         }
@@ -203,12 +206,19 @@ class Preload extends Phaser.Scene {
         if (this.stars.countActive(true) === 0) {
           this.stars.getChildren().forEach(function (star) {
             star.body.position.x = Math.random() * _width;
+            star.body.position.y = 0
             star.body.velocity.y = Phaser.Math.Between(100, 120);
             (star as Star)
               .setVisible(true)
-              .setActive(true);
+              .setActive(true)
+              .setCollideWorldBounds(true)
+              .setBounce(0.5);
               (star as Star).collected = false;
           });
+          var x = (this.player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+          var bomb = this.bombs.create(x, 16, 'bomb');
+          bomb.setBounce(1).setCollideWorldBounds(true);
+          bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
         }
       },
       null,
@@ -216,6 +226,7 @@ class Preload extends Phaser.Scene {
     );
 
     this.bombs = this.physics.add.group();
+
     this.physics.add.collider(this.bombs, this.platforms);
     this.physics.add.collider(this.player, this.bombs, (player, bomb) => {
       this.physics.pause();
@@ -224,7 +235,7 @@ class Preload extends Phaser.Scene {
       this.gameOver = true;
       this.gameOverText = this.add.text(400, 300, "Game Over", {
         fontSize: "64px",
-        color: "#000",
+        color: "blue",
       });
     });
   }
