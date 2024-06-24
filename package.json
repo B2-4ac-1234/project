@@ -19,6 +19,7 @@
     "pinia": "^2.1.6",
     "tailwindcss": "^3.4.3",
     "unplugin-auto-import": "^0.17.5",
+    "vite-plugin-restart": "^0.4.0",
     "vue": "^3.4.21",
     "vue-request": "^2.0.3",
     "vue-router": "^4.2.4"
@@ -27,6 +28,7 @@
     "@types/node": "^20.12.8",
     "@vitejs/plugin-vue": "^5.0.4",
     "typescript": "^5.2.2",
+    "unplugin-turbo-console": "^1.8.6",
     "vite": "^5.2.0",
     "vue-tsc": "^2.0.6"
   }
