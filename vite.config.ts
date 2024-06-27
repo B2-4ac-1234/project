@@ -28,6 +28,7 @@ export default defineConfig({
     }),
     TurboConsole({
       /* options here */
+      prefix: `${new Date().toLocaleString()}`,
       disableLaunchEditor: true,
     }),
   ],
