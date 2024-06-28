@@ -1,4 +1,5 @@
 <template>
+  <p style="position: absolute;top: 0px;">copy from <a href="https://www.codecopy.cn/post/x5kn0g">https://www.codecopy.cn/post/x5kn0g</a></p>
   <div class="rail">
     <div class="stamp four">4</div>
     <div class="stamp zero">0</div>
