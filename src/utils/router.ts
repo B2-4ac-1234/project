@@ -13,20 +13,26 @@ var routes: Array<RouteRecordRaw> = [
     path: "/imageHover",
     component: () => import("@/pages/ImageHoverEnlargeView.vue"),
   },
+  {
+    path: "/MediaElementPlayer",
+    component: () => import("@/pages/MediaElementPlayer.vue"),
+  },
 ];
 
-const phaserRouters: any = import.meta.glob('@/phaser/*.vue', { eager: true })
+const phaserRouters: any = import.meta.glob("@/phaser/*.vue", { eager: true });
 // routes.push(metaRouters)
-Object.keys(phaserRouters).forEach(key => {
-  const path = key.substring(key.lastIndexOf("/"), key.length + 1).replaceAll(".vue", "")
+Object.keys(phaserRouters).forEach((key) => {
+  const path = key
+    .substring(key.lastIndexOf("/"), key.length + 1)
+    .replaceAll(".vue", "");
   console.log(path);
   const component = phaserRouters[key];
   routes.push({
     path: `/${path}`,
     component: component.default || component,
-    name: path
+    name: path,
   });
-})
+});
 // for (const key in metaRouters) {
 //   const path = key.substring(key.lastIndexOf("/"), key.length).replaceAll(".vue", "")
 //   console.log(path);
@@ -43,7 +49,7 @@ routes.push({
   meta: {
     title: "Not Found",
   },
-})
+});
 // 2.返回一个 router 实列，为函数，配置 history 模式
 const router = createRouter({
   history: createWebHashHistory(),

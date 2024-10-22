@@ -4,6 +4,7 @@
       <ul>
         <li> <router-link :to="{ path: '/404' }">404</router-link></li>
         <li> <router-link :to="{ path: '/imageHover' }">图片放大组件</router-link></li>
+        <li> <router-link :to="{ path: '/MediaElementPlayer' }">MediaElementPlayer视频播放组件</router-link></li>
         <div v-for="item in phaserRoutes">
           <li><router-link :to="item.path">{{ item.name }}</router-link></li>
         </div>
