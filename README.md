@@ -38,4 +38,4 @@ npm run dev
 
 3.[phaser 官网 demo 个人改进版](https://b2-4ac-1234.github.io/project/#/demo1)
 
-4.[phaser 实现 z 系洛克人(未完成)](https://b2-4ac-1234.github.io/project/#/demo2)
+4.[phaser 实现 z 系洛克人(未完成,鉴于工作量太大,不做了)](https://b2-4ac-1234.github.io/project/#/demo2)
