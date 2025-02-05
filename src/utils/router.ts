@@ -33,6 +33,21 @@ Object.keys(phaserRouters).forEach((key) => {
     name: path,
   });
 });
+
+const pixiRouters: any = import.meta.glob("@/pixi/*.vue", { eager: true });
+// routes.push(metaRouters)
+Object.keys(pixiRouters).forEach((key) => {
+  const path = key
+    .substring(key.lastIndexOf("/"), key.length + 1)
+    .replaceAll(".vue", "");
+  console.log(path);
+  const component = pixiRouters[key];
+  routes.push({
+    path: `/${path}`,
+    component: component.default || component,
+    name: path,
+  });
+});
 // for (const key in metaRouters) {
 //   const path = key.substring(key.lastIndexOf("/"), key.length).replaceAll(".vue", "")
 //   console.log(path);

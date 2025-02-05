@@ -8,6 +8,9 @@
         <div v-for="item in phaserRoutes">
           <li><router-link :to="item.path">{{ item.name }}</router-link></li>
         </div>
+        <div v-for="item in pixiRoutes">
+          <li><router-link :to="item.path">{{ item.name }}</router-link></li>
+        </div>
       </ul>
     </div>
   </div>
@@ -18,6 +21,16 @@
 const phaserRouters: any = import.meta.glob('@/phaser/*.vue', { eager: true })
 
 const phaserRoutes = Object.keys(phaserRouters).map(key => {
+  const path = key.substring(key.lastIndexOf("/"), key.length + 1).replaceAll(".vue", "")
+  return {
+    name: `${path.replace("/", "")}`,
+    path: `${path}`,
+  }
+})
+
+const pixiRouters: any = import.meta.glob('@/pixi/*.vue', { eager: true })
+
+const pixiRoutes = Object.keys(pixiRouters).map(key => {
   const path = key.substring(key.lastIndexOf("/"), key.length + 1).replaceAll(".vue", "")
   return {
     name: `${path.replace("/", "")}`,
