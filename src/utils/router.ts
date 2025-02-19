@@ -28,9 +28,9 @@ Object.keys(phaserRouters).forEach((key) => {
   console.log(path);
   const component = phaserRouters[key];
   routes.push({
-    path: `/${path}`,
+    path: `/phaser/${path}`,
     component: component.default || component,
-    name: path,
+    name: `/phaser${path}`,
   });
 });
 
@@ -43,9 +43,9 @@ Object.keys(pixiRouters).forEach((key) => {
   console.log(path);
   const component = pixiRouters[key];
   routes.push({
-    path: `/${path}`,
+    path: `/pixi/${path}`,
     component: component.default || component,
-    name: path,
+    name: `/pixi${path}`,
   });
 });
 // for (const key in metaRouters) {
