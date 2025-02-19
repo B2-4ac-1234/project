@@ -4,12 +4,19 @@ import boom_png from '@/assets/pixi/saiche/boom.png'
 import emcar_png from '@/assets/pixi/saiche/emcar.png'
 import mycar_png from '@/assets/pixi/saiche/mycar.png'
 
-import { Application, Container, Sprite, Texture, Loader, Graphics, Text, TextStyle,Assets} from 'pixi.js';
+import { Application, Container, Sprite, Text, TextStyle,Assets} from 'pixi.js';
 import colors from 'tailwindcss/colors'
 
 //创建一个pixi应用
 let app = new Application();
 // let loader
+// 预加载资源
+Promise.all([
+  Assets.load(bg_png),
+  Assets.load(boom_png),
+  Assets.load(emcar_png),
+  Assets.load(mycar_png)
+])
 
 onMounted(async () => {
   // loader = await new Loader().load([bg_png, boom_png, emcar_png, mycar_png])
@@ -17,7 +24,6 @@ onMounted(async () => {
   document.body.appendChild(app.canvas);
   setup();
 })
-
 
 
 let state,gameScene,gameOverScene,message,bg,mycarSprite,blobs,numberOfBlobs,score,hp;
@@ -168,7 +174,6 @@ function checkEMCarPositionHit(blob){
   for(var i=0;i<blobs.length;i++){
     if(hitTestRectangle(blob,blobs[i])){
       return true;
-      break;
     }
   }
 }
@@ -352,15 +357,7 @@ function hitTestRectangle(r1, r2) {
   if (Math.abs(vx) < combinedHalfWidths) {
 
     //再检查y轴
-    if (Math.abs(vy) < combinedHalfHeights) {
-
-      //如果是则判断为碰撞
-      hit = true;
-    } else {
-
-      //否则为没碰撞
-      hit = false;
-    }
+    hit = Math.abs(vy) < combinedHalfHeights;
   } else {
 
     //x轴没有碰撞
