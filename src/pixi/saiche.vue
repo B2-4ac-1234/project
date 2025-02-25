@@ -4,34 +4,25 @@ import boom_png from '@/assets/pixi/saiche/boom.png'
 import emcar_png from '@/assets/pixi/saiche/emcar.png'
 import mycar_png from '@/assets/pixi/saiche/mycar.png'
 
-import { Application, Container, Sprite, Text, TextStyle,Assets} from 'pixi.js';
+import {Application, Assets, Container, Loader, Sprite, Text, TextStyle} from 'pixi.js';
 import colors from 'tailwindcss/colors'
 
 //创建一个pixi应用
 let app = new Application();
 // let loader
-// 预加载资源
-Promise.all([
-  Assets.load(bg_png),
-  Assets.load(boom_png),
-  Assets.load(emcar_png),
-  Assets.load(mycar_png)
-])
-
 onMounted(async () => {
-  // loader = await new Loader().load([bg_png, boom_png, emcar_png, mycar_png])
   await app.init({ background: colors.transparent, resizeTo: window});
   document.body.appendChild(app.canvas);
   setup();
 })
 
 
-let state,gameScene,gameOverScene,message,bg,mycarSprite,blobs,numberOfBlobs,score,hp;
+let state,gameScene,gameOverScene,message,bg,mycarSprite,blobs,numberOfBlobs,score;
+const hp = ref(0)
 async function setup() {
   numberOfBlobs = 2;//初始化最大敌车数量
   score = 0;//初始化分数
-  hp = 5;//初始化HP
-  document.getElementById('hp').innerHTML = String(hp);//将HP写入元素
+  hp.value = 5;//初始化HP
   //设置游戏场景容器
   gameScene = new Container({
     width:240,
@@ -183,13 +174,14 @@ function gameLoop(delta){
 }
 async function play(delta) {
   //背景移动
-  bg.x -= 10;
-  if (bg.x < -230) {
+  // bg.x -= 10;
+  // if (bg.x < -230) {
     bg.x = 0;
-  }
+  // }
   //移动赛车
   mycarSprite.x += mycarSprite.vx;
   mycarSprite.y += mycarSprite.vy;
+  //无敌时间
   if (mycarSprite.invl > 0) {
     mycarSprite.invl--;
   }
@@ -227,15 +219,14 @@ async function play(delta) {
     //车子图片变更为爆炸
     mycarSprite.texture = await Assets.load(boom_png);
     //减血
-    hp--;
-    document.getElementById('hp').innerHTML = String(hp);
+    hp.value--;
     //判断是否血量归零
-    if (hp < 1) {
+    if (hp.value < 1) {
       //抛出游戏结束
       state = end;
       message.text = "你的车炸了！刷新重来";
     }
-    mycarSprite.invl = 30//设置无敌时间
+    mycarSprite.invl = 50//设置无敌时间
 
   } else if (mycarSprite.invl <= 0) {//如果不在无敌时间内
     //车辆贴图变回去
@@ -369,7 +360,7 @@ function hitTestRectangle(r1, r2) {
 }
 //游戏结束显示游戏结束场景，隐藏游戏场景
 function end() {
-  gameScene.visible = false;
+  // gameScene.visible = false;
   gameOverScene.visible = true;
 }
 </script>
@@ -378,7 +369,7 @@ function end() {
 <p>saiche</p>
   <p>copy from https://gitee.com/eeg1412/pixijs_chinese_course/blob/master/myGame/saiche/saiche.html</p>
   <p><span>分数：</span><span id="score"></span></p>
-  <p><span>HP：</span><span id="hp"></span></p>
+  <p><span>HP：</span><span>{{hp}}</span></p>
 
 </template>
 
