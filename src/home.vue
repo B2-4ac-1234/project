@@ -5,6 +5,7 @@
         <li> <router-link :to="{ path: '/404' }">404</router-link></li>
         <li> <router-link :to="{ path: '/imageHover' }">图片放大组件</router-link></li>
         <li> <router-link :to="{ path: '/MediaElementPlayer' }">MediaElementPlayer视频播放组件</router-link></li>
+        <li> <a href="/project/web_rtc.html">web_rtc</a></li>
       </ul>
       <br/>
       <p>phaser.js</p>
